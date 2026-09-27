@@ -301,6 +301,11 @@
       gap: 6px
     }
 
+    .ctrl {
+      width: 62px;
+      flex: 0 0 62px;
+    }
+
     .add {
       width: 62px;
       border: 1px solid var(--gold2);
@@ -323,14 +328,43 @@
       color: var(--muted)
     }
 
-    .add.in {
-      background: linear-gradient(135deg, var(--gold), var(--gold2));
-      color: #1a1108;
-      border-color: transparent
+    .stepper {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      width: 62px;
+      height: 32px;
+      background: var(--nonveg);
+      border-radius: 8px;
+      overflow: hidden;
     }
 
-    .add.in small {
-      color: #4a3419
+    .ctrl.active .add {
+      display: none
+    }
+
+    .ctrl.active .stepper {
+      display: flex
+    }
+
+    .stepper button {
+      flex: 0 0 22px;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .stepper span {
+      flex: 1;
+      text-align: center;
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 600;
     }
 
     .empty {
@@ -824,8 +858,15 @@
               <div class="info"><div class="name">${name}</div>${desc ? `<div class="desc">${desc}</div>` : ""}</div>
               <div class="prices">${prices.map((p, k) => {
           const key = `${c.id}|${name}|${labels[k]}`;
-          return `<button class="add" data-key="${key}" data-name="${name}" data-label="${labels[k]}" data-price="${p}">
-                  ₹${p}${labels[k] ? `<small>${labels[k]}</small>` : ""}</button>`;
+          return `<div class="ctrl" data-key="${key}">
+                  <button class="add" data-key="${key}" data-name="${name}" data-label="${labels[k]}" data-price="${p}">
+                    ₹${p}${labels[k] ? `<small>${labels[k]}</small>` : ""}</button>
+                  <div class="stepper">
+                    <button data-k="${key}" data-d="-1">−</button>
+                    <span>0</span>
+                    <button data-k="${key}" data-d="1">+</button>
+                  </div>
+                </div>`;
         }).join("")}</div>
             </div>`;
       }).join("")}
@@ -860,7 +901,12 @@
       let count = 0, total = 0;
       cart.forEach(v => { count += v.qty; total += v.qty * v.price; });
       $("#count").textContent = count; $("#total").textContent = "₹" + total;
-      document.querySelectorAll(".add").forEach(b => b.classList.toggle("in", cart.has(b.dataset.key)));
+      document.querySelectorAll(".ctrl").forEach(el => {
+        const v = cart.get(el.dataset.key);
+        el.classList.toggle("active", !!v);
+        const span = el.querySelector(".stepper span");
+        if (span) span.textContent = v ? v.qty : 0;
+      });
       $("#lines").innerHTML = cart.size ? [...cart].map(([k, v]) => `
     <div class="line"><div class="info"><div class="name">${v.name}</div><small>${v.label ? v.label + " · " : ""}₹${v.price}</small></div>
       <div class="qty"><button data-k="${k}" data-d="-1">−</button><span>${v.qty}</span><button data-k="${k}" data-d="1">+</button></div></div>`).join("")
@@ -873,6 +919,15 @@
     render(); updateCart();
 
     $("#menu").addEventListener("click", e => {
+      const step = e.target.closest(".stepper button[data-k]");
+      if (step) {
+        const k = step.dataset.k;
+        const v = cart.get(k); if (!v) return;
+        v.qty += +step.dataset.d;
+        if (v.qty <= 0) cart.delete(k);
+        updateCart();
+        return;
+      }
       const b = e.target.closest(".add"); if (!b) return;
       const k = b.dataset.key;
       if (cart.has(k)) cart.get(k).qty++;
