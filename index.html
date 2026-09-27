@@ -117,11 +117,18 @@
     .filters {
       display: flex;
       gap: 8px;
-      padding: 0 16px 8px
+      padding: 0 16px 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar {
+      display: none
     }
 
     .filters button {
       flex: 0 0 auto;
+      white-space: nowrap;
       background: var(--card);
       border: 1px solid var(--line);
       color: var(--muted);
@@ -600,6 +607,7 @@
       <button data-f="all" class="on">All</button>
       <button data-f="v">● Veg</button>
       <button data-f="nv">● Non-Veg</button>
+      <button data-f="drink">Beverages &amp; Desserts</button>
     </div>
     <nav class="tabs" id="tabs"></nav>
   </div>
@@ -906,10 +914,14 @@
       const q = $("#q").value.trim().toLowerCase();
       let any = false;
       document.querySelectorAll("section").forEach(sec => {
-        const hideSection = filter !== "all" && sec.dataset.drink === "1";
+        const isDrink = sec.dataset.drink === "1";
+        const hideSection = filter === "drink" ? !isDrink
+          : filter !== "all" ? isDrink
+          : false;
         sec.querySelectorAll(".item").forEach(el => {
           const ok = !hideSection && el.dataset.name.includes(q) &&
-            (filter === "all" || (filter === "v" ? el.dataset.type === "v" : el.dataset.type === "nv"));
+            ((filter === "all" || filter === "drink") ? true
+              : filter === "v" ? el.dataset.type === "v" : el.dataset.type === "nv");
           el.style.display = ok ? "" : "none"; any ||= ok;
         });
       });
