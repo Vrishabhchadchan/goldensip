@@ -511,8 +511,8 @@
       text-align: center
     }
 
-    .sheet textarea {
-      margin: 12px 16px 0;
+    .sheet input, .sheet textarea {
+      margin: 10px 16px 0;
       background: var(--bg);
       border: 1px solid var(--line);
       color: var(--text);
@@ -521,7 +521,30 @@
       font: inherit;
       font-size: .85rem;
       resize: none;
-      height: 62px
+      display: block;
+      width: calc(100% - 32px);
+    }
+
+    .sheet textarea {
+      height: 56px
+    }
+
+    .sheet input.err, .sheet textarea.err {
+      border-color: var(--nonveg)
+    }
+
+    .field-label {
+      margin: 10px 16px 0;
+      font-size: .74rem;
+      color: var(--muted);
+    }
+
+    .field-label:first-of-type {
+      margin-top: 12px;
+    }
+
+    .field-label .req {
+      color: var(--nonveg);
     }
 
     .total {
@@ -603,7 +626,12 @@
       <h2>Your Order</h2><button class="x" id="close" aria-label="Close">×</button>
     </header>
     <div class="lines" id="lines"></div>
-    <textarea id="notes" placeholder="Name, table no. / address, special instructions (optional)"></textarea>
+    <p class="field-label">Your Name <span class="req">*</span></p>
+    <input id="custName" type="text" placeholder="Enter your name">
+    <p class="field-label">Delivery Address <span class="req">*</span></p>
+    <input id="custAddress" type="text" placeholder="Enter delivery address">
+    <p class="field-label">Note (special instructions, optional)</p>
+    <textarea id="notes" placeholder="e.g. send ketchup, less spicy"></textarea>
     <div class="total"><span>Total</span><span id="total">₹0</span></div>
     <button class="wabtn" id="send">Send Order on WhatsApp</button>
   </div>
@@ -890,11 +918,25 @@
     function waLink(text) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`; }
 
     function orderText() {
+      const name = $("#custName").value.trim();
+      const addr = $("#custAddress").value.trim();
       if (!cart.size) return "Hello The Golden Sip Café! I would like to place an order:\n";
       let t = "Hello The Golden Sip Café! I would like to order:\n\n";
       cart.forEach(v => { t += `• ${v.qty} x ${v.name}${v.label ? ` (${v.label})` : ""}\n`; });
+      t += `\nName: ${name}\nAddress: ${addr}`;
       const n = $("#notes").value.trim(); if (n) t += `\nNote: ${n}`;
       return t;
+    }
+
+    function validateFields() {
+      let ok = true;
+      const name = $("#custName"), addr = $("#custAddress");
+      [[name, name.value.trim()], [addr, addr.value.trim()]].forEach(([el, val]) => {
+        el.classList.toggle("err", !val);
+        if (!val) ok = false;
+      });
+      if (!ok) name.value.trim() ? addr.focus() : name.focus();
+      return ok;
     }
 
     function updateCart() {
@@ -914,7 +956,10 @@
     }
 
     function openSheet(o) { $("#sheet").classList.toggle("open", o); $("#bg").style.display = o ? "block" : "none"; }
-    function sendWA() { window.open(waLink(orderText()), "_blank"); }
+    function sendWA() {
+      if (!validateFields()) return;
+      window.open(waLink(orderText()), "_blank");
+    }
 
     render(); updateCart();
 
@@ -944,6 +989,8 @@
     $("#close").onclick = $("#bg").onclick = () => openSheet(false);
     $("#waBar").onclick = () => cart.size ? openSheet(true) : sendWA();
     $("#send").onclick = sendWA;
+    $("#custName").addEventListener("input", e => e.target.classList.remove("err"));
+    $("#custAddress").addEventListener("input", e => e.target.classList.remove("err"));
     $("#q").addEventListener("input", applyFilter);
     document.querySelectorAll(".filters button").forEach(b => b.onclick = () => {
       document.querySelectorAll(".filters button").forEach(x => x.classList.remove("on"));
