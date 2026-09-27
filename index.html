@@ -662,7 +662,7 @@
         id: "combos", title: "TGS Combo Special", groups: [
           {
             items: [
-              ["Veg Burger Combo", 139, "v", "1 Burger, Fries, Mocktail"],
+              ["Veg Burger Combo", 149, "v", "1 Burger, Fries, Mocktail"],
               ["Sandwich Combo Veg", 159, "v", "Fries, Sandwich, Coke"],
               ["Pizza Combo Veg", 189, "v", "Exotic Paneer Pizza, 1 Mocktail, Cheese Bowl"]]
           }]
@@ -771,7 +771,7 @@
           { name: "Non Veg Momos (5 pcs)", items: [["Chicken Momos", 70, "nv"], ["Chicken Fried Momos", 90, "nv"]] }]
       },
       {
-        id: "bites", title: "Quick Bites & Desserts", groups: [
+        id: "bites", drink: true, title: "Quick Bites & Desserts", groups: [
           {
             name: "Quick Bites", items: [
               ["Bread Butter", 55, "v"], ["Browny Cake", 60, "v"], ["Jam Bread", 25, "v"], ["Cookies", 20, "v"], ["Chocolate Cookies", 25, "v"],
@@ -785,14 +785,14 @@
           }]
       },
       {
-        id: "icecream", title: "Ice Cream", note: "AMUL · 1 scoop ₹45 / 2 scoops ₹90", groups: [
+        id: "icecream", drink: true, title: "Ice Cream", note: "AMUL · 1 scoop ₹45 / 2 scoops ₹90", groups: [
           {
             items: ["Butter Scotch", "Choco Chips", "Brownie Brust", "Chocolate", "Pista", "Dry Fruit", "Strawberry", "Vanilla"]
               .map(n => [n + " Ice Cream", [45, 90], "v"]), scoops: true
           }]
       },
       {
-        id: "hot", title: "Hot Beverages", groups: [
+        id: "hot", drink: true, title: "Hot Beverages", groups: [
           {
             name: "Premium Teas", items: [
               ["Special Tea", 25, ""], ["Black Tea", 20, ""], ["Green Tea", 25, ""], ["Lemon Tea", 25, ""], ["Cardamom Tea", 25, ""]]
@@ -811,7 +811,7 @@
           }]
       },
       {
-        id: "cold", title: "Cold Beverages", groups: [
+        id: "cold", drink: true, title: "Cold Beverages", groups: [
           {
             name: "Frappes", items: [
               ["Café Frappe", 80, ""], ["Dark Frappe", 90, ""], ["Cold Crunchy Frappe", 99, ""], ["Special Golden Sip Frappe", 120, ""],
@@ -830,7 +830,7 @@
           }]
       },
       {
-        id: "shakes", title: "Shakes, Mastani & Falooda", groups: [
+        id: "shakes", drink: true, title: "Shakes, Mastani & Falooda", groups: [
           {
             name: "Milk Shakes", items: [
               ["Vanilla Milk Shake", 80, ""], ["Strawberry Milk Shake", 80, ""], ["Mango Milk Shake", 90, ""], ["Chocolate Milk Shake", 99, ""],
@@ -849,7 +849,7 @@
           }]
       },
       {
-        id: "mocktails", title: "Mocktails & Juice", groups: [
+        id: "mocktails", drink: true, title: "Mocktails & Juice", groups: [
           {
             name: "Mocktails", items: [
               ["Virgin Mojito", 90, ""], ["Watermelon Mojito", 109, ""], ["Blue Berry", 109, ""], ["Kala Khatta", 109, ""], ["Green Angel", 109, ""],
@@ -871,7 +871,7 @@
     function render() {
       $("#tabs").innerHTML = MENU.map(c => `<a href="#${c.id}">${c.title}</a>`).join("");
       $("#menu").innerHTML = MENU.map(c => `
-    <section id="${c.id}">
+    <section id="${c.id}" data-drink="${c.drink ? "1" : "0"}">
       <h2>${c.title}</h2>
       ${c.note ? `<p class="note">${c.note}</p>` : ""}
       ${c.groups.map(g => `
@@ -905,10 +905,13 @@
     function applyFilter() {
       const q = $("#q").value.trim().toLowerCase();
       let any = false;
-      document.querySelectorAll(".item").forEach(el => {
-        const ok = el.dataset.name.includes(q) &&
-          (filter === "all" || (filter === "v" ? el.dataset.type !== "nv" : el.dataset.type === "nv"));
-        el.style.display = ok ? "" : "none"; any ||= ok;
+      document.querySelectorAll("section").forEach(sec => {
+        const hideSection = filter !== "all" && sec.dataset.drink === "1";
+        sec.querySelectorAll(".item").forEach(el => {
+          const ok = !hideSection && el.dataset.name.includes(q) &&
+            (filter === "all" || (filter === "v" ? el.dataset.type === "v" : el.dataset.type === "nv"));
+          el.style.display = ok ? "" : "none"; any ||= ok;
+        });
       });
       document.querySelectorAll(".group").forEach(g => g.style.display = [...g.querySelectorAll(".item")].some(i => i.style.display !== "none") ? "" : "none");
       document.querySelectorAll("section").forEach(s => s.style.display = [...s.querySelectorAll(".group")].some(i => i.style.display !== "none") ? "" : "none");
