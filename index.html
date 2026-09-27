@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0a07">
+<title>The Golden Sip Café · Menu</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0a07; --card:#18120c; --card2:#211810; --line:#3a2a1a;
+    --gold:#f3d9a4; --gold2:#d9a55b; --glow:rgba(243,190,110,.45);
+    --maroon:#7a3b32; --text:#f5ead7; --muted:#b8a488;
+    --veg:#3fa34d; --nonveg:#c0392b; --wa:#25d366;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:Poppins,system-ui,sans-serif;
+    font-size:15px;-webkit-tap-highlight-color:transparent;padding-bottom:90px;
+    background-image:radial-gradient(circle at 50% -10%,rgba(217,165,91,.18),transparent 55%)}
+  header{text-align:center;padding:28px 16px 18px}
+  header img{width:130px;height:130px;border-radius:50%;
+    box-shadow:0 0 30px var(--glow),0 0 0 2px rgba(243,217,164,.25)}
+  h1{font-family:Cinzel,serif;color:var(--gold);font-size:1.6rem;letter-spacing:1.5px;margin-top:14px;
+    text-shadow:0 0 14px var(--glow)}
+  .tag{color:var(--muted);font-size:.85rem;letter-spacing:3px;text-transform:uppercase;margin-top:4px}
+
+  .sticky{position:sticky;top:0;z-index:10;background:rgba(13,10,7,.94);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:10px 0 8px}
+  .search{margin:0 16px 10px;position:relative}
+  .search input{width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);
+    border-radius:12px;padding:11px 14px 11px 38px;font:inherit;outline:none}
+  .search input:focus{border-color:var(--gold2)}
+  .search span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .filters{display:flex;gap:8px;padding:0 16px 8px}
+  .filters button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--muted);
+    border-radius:20px;padding:5px 12px;font:inherit;font-size:.8rem;cursor:pointer}
+  .filters button.on{border-color:var(--gold2);color:var(--gold)}
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding:0 16px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs a{flex:0 0 auto;text-decoration:none;color:var(--gold);font-size:.82rem;white-space:nowrap;
+    padding:7px 14px;border-radius:20px;background:var(--card2);border:1px solid var(--line)}
+  .tabs a.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1108;font-weight:600;border-color:transparent}
+
+  main{max-width:760px;margin:0 auto;padding:8px 16px}
+  section{scroll-margin-top:150px;margin-top:22px}
+  section>h2{font-family:Cinzel,serif;color:var(--gold);font-size:1.25rem;letter-spacing:1px;
+    display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  section>h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gold2),transparent)}
+  .note{color:var(--muted);font-size:.8rem;margin:-4px 0 10px}
+  .group{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 14px;margin-bottom:12px}
+  .group h3{display:inline-block;background:var(--maroon);color:#fbe9d4;font-size:.78rem;font-weight:600;
+    letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px;margin:10px 0 4px}
+  .cols{display:flex;justify-content:flex-end;gap:6px;color:var(--muted);font-size:.72rem;margin-top:-22px;padding-bottom:4px}
+  .cols span{width:62px;text-align:center}
+  .item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line)}
+  .item:last-child{border-bottom:0}
+  .dot{flex:0 0 14px;height:14px;border:1.5px solid var(--veg);border-radius:3px;display:grid;place-items:center}
+  .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--veg)}
+  .dot.nv{border-color:var(--nonveg)} .dot.nv::after{background:var(--nonveg)}
+  .dot.none{visibility:hidden}
+  .info{flex:1;min-width:0}
+  .name{font-weight:500;line-height:1.3}
+  .desc{color:var(--muted);font-size:.76rem;margin-top:2px}
+  .prices{display:flex;gap:6px}
+  .add{width:62px;border:1px solid var(--gold2);background:transparent;color:var(--gold);border-radius:8px;
+    padding:6px 0;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;text-align:center;line-height:1.15}
+  .add small{display:block;font-size:.62rem;font-weight:400;color:var(--muted)}
+  .add.in{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1108;border-color:transparent}
+  .add.in small{color:#4a3419}
+  .empty{text-align:center;color:var(--muted);padding:40px 0;display:none}
+
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(13,10,7,.96);border-top:1px solid var(--line);display:flex;gap:10px;max-width:760px;margin:0 auto}
+  .bar button{flex:1;border:0;border-radius:12px;padding:13px;font:inherit;font-weight:600;cursor:pointer}
+  .cartbtn{background:var(--card2);color:var(--gold);border:1px solid var(--gold2)!important}
+  .wabtn{background:var(--wa);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px}
+  .wabtn svg{width:20px;height:20px}
+
+  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:30;display:none}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--card);border-radius:20px 20px 0 0;
+    max-height:85vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .25s;
+    max-width:760px;margin:0 auto;border-top:1px solid var(--gold2)}
+  .sheet.open{transform:none}
+  .sheet header{padding:16px;display:flex;justify-content:space-between;align-items:center;text-align:left}
+  .sheet header h2{font-family:Cinzel,serif;color:var(--gold);font-size:1.15rem}
+  .sheet .x{background:none;border:0;color:var(--muted);font-size:1.6rem;cursor:pointer}
+  .lines{overflow-y:auto;padding:0 16px;flex:1}
+  .line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .line .info small{color:var(--muted)}
+  .qty{display:flex;align-items:center;border:1px solid var(--gold2);border-radius:8px}
+  .qty button{background:none;border:0;color:var(--gold);width:30px;height:30px;font-size:1.1rem;cursor:pointer}
+  .qty span{min-width:20px;text-align:center}
+  .sheet textarea{margin:12px 16px 0;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:10px;
+    padding:10px;font:inherit;font-size:.85rem;resize:none;height:62px}
+  .total{display:flex;justify-content:space-between;padding:12px 16px;font-weight:600;color:var(--gold)}
+  .sheet .wabtn{margin:0 16px calc(16px + env(safe-area-inset-bottom));border:0;border-radius:12px;padding:14px;font:inherit;font-weight:600;cursor:pointer}
+  .blank{color:var(--muted);text-align:center;padding:24px 0}
+  footer{text-align:center;color:var(--muted);font-size:.78rem;padding:30px 16px 10px}
+  footer b{color:var(--gold);font-family:Cinzel,serif}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="The Golden Sip Café logo">
+  <h1>The Golden Sip Café</h1>
+  <div class="tag">Warm Vibes · Better Sips</div>
+</header>
+
+<div class="sticky">
+  <div class="search"><span>⌕</span><input id="q" type="search" placeholder="Search dishes, drinks…" autocomplete="off"></div>
+  <div class="filters">
+    <button data-f="all" class="on">All</button>
+    <button data-f="v">● Veg</button>
+    <button data-f="nv">● Non-Veg</button>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</div>
+
+<main id="menu"></main>
+<p class="empty" id="empty">No items match your search.</p>
+
+<footer><b>The Golden Sip Café</b><br>Prices in ₹ · Taxes as applicable</footer>
+
+<div class="bar">
+  <button class="cartbtn" id="cartBtn">🛒 My Order (<span id="count">0</span>)</button>
+  <button class="wabtn" id="waBar">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+    Order Online
+  </button>
+</div>
+
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet">
+  <header><h2>Your Order</h2><button class="x" id="close" aria-label="Close">×</button></header>
+  <div class="lines" id="lines"></div>
+  <textarea id="notes" placeholder="Name, table no. / address, special instructions (optional)"></textarea>
+  <div class="total"><span>Total</span><span id="total">₹0</span></div>
+  <button class="wabtn" id="send">Send Order on WhatsApp</button>
+</div>
+
+<script>
+/* ===== CHANGE THIS: café WhatsApp number with country code, digits only ===== */
+const WHATSAPP_NUMBER = "917559492970";
+
+/* Menu data. Item: [name, price, type, description]
+   price: number, or [7inch, 10inch] for pizzas. type: "v" veg, "nv" non-veg, "" neither */
+const MENU = [
+ {id:"starters", title:"Starters", groups:[
+  {name:"Veg", items:[
+   ["Cube Pizza Pocket",110,"v"],["Bombay Crispy Fry",110,"v"],["Cheese Kurkure",140,"v"],["Veg Cutlet",140,"v"],
+   ["Cheese Pakoda",145,"v"],["Cheese Pizza Pocket",150,"v"],["Veg Fingers",150,"v"],["Cottage Paneer",155,"v"],
+   ["Hara Bhara Kabab",160,"v"],["Cheese Cherry Pineapple",165,"v"]]},
+  {name:"Non Veg", items:[
+   ["Chicken Sausages",140,"nv"],["Fish Fingers",160,"nv"],["Chicken Balls",180,"nv"],["BBQ Chicken Wings",180,"nv"],
+   ["Fried Crab",180,"nv"],["Peri Peri Chicken Wings",200,"nv"],["Chicken Nuggets",210,"nv"],
+   ["Peri Peri Chicken Nuggets",249,"nv"],["Fried Chicken Basket",380,"nv"],["Cheesy Chicken Basket",405,"nv"]]}]},
+ {id:"combos", title:"TGS Combo Special", groups:[
+  {items:[
+   ["Veg Burger Combo",139,"v","1 Burger, Fries, Mocktail"],
+   ["Sandwich Combo Veg",159,"v","Fries, Sandwich, Coke"],
+   ["Pizza Combo Veg",189,"v","Exotic Paneer Pizza, 1 Mocktail, Cheese Bowl"]]}]},
+ {id:"pizza", title:"Pizza", note:"Extra cheese: ₹30 (7\") · ₹40 (10\")", sizes:true, groups:[
+  {name:"Veg", items:[
+   ["Margherita",[89,175],"v","Single cheese topping"],["Cheese Corn",[89,175],"v","Cheese & corn"],
+   ["Mix Veggie",[99,189],"v","Tomato, onion, corn"],["Exotic Paneer",[99,199],"v","Cheese & flavoured paneer"],
+   ["Farm Fresh",[199,359],"v","Capsicum, onion, corn, mushroom"],["BBQ Magic Mushroom",[199,359],"v","Onion, corn, mushroom"],
+   ["Schezwan Veg Spicy",[199,359],"v","Onion, capsicum, corn, spring onion"],["Peri Peri Paneer",[239,399],"v","Paneer, olive, jalapeños, bell pepper"],
+   ["Paneer Makhni",[239,399],"v","Makhni paneer, capsicum, onion, corn, coriander"],["Tandoori Paneer",[239,399],"v","Tandoori paneer, bell pepper, veggies, onion, green chilli"],
+   ["Veg Overload",[269,479],"v","Paneer, mushroom, bell pepper, veggies, baby corn, olives"],["Mexican Supreme",[269,479],"v","Nachos, jalapeños, olive, bell pepper"],
+   ["The Golden Sip Special",[269,479],"v","Paneer, bell pepper, olive, mushroom, babycorn"]]},
+  {name:"Non Veg", items:[
+   ["Cheesy Chicken",[179,289],"nv","Cheese & grilled chicken"],["Chicken Sausage",[179,289],"nv","Cheese & chicken sausages"],
+   ["BBQ Chicken BBQ",[249,399],"nv","Chicken, mushroom, onion"],["Kheema Chicken",[229,349],"nv","Chicken kheema, onion, coriander"],
+   ["Sezwan Chicken Spicy",[229,379],"nv","Chicken, onion, corn, capsicum, spring onion"],["Chicken Peri Peri",[269,469],"nv","Chicken, olives, jalapeños, capsicum"],
+   ["Chicken Makhni",[269,469],"nv","Chicken makhni, capsicum, onion, corn"],["Tandoori Chicken",[269,469],"nv","Chicken tandoori, bell pepper, onion, green chilli"],
+   ["Overload Chicken",[309,589],"nv","Chicken sausages, chicken kheema, roasted chicken, bell pepper"],
+   ["Mexican Chicken",[309,589],"nv","Chicken sausages, nachos, jalapeños, olive, bell pepper"],
+   ["Special TGS Non Veg",[309,589],"nv","Salami chicken, chicken sausages, olive, mushroom, baby corn, bell pepper"]]}]},
+ {id:"burger", title:"Burgers & Fries", note:"Cheese slice extra: ₹20", groups:[
+  {name:"Veg Burger", items:[
+   ["Veg Burger",89,"v"],["BBQ Veg Burger",109,"v"],["Spice Paneer Burger",139,"v"],["TGS Bigshow Burger",159,"v"],["BBQ Paneer Steak Burger",129,"v"]]},
+  {name:"Non Veg Burger", items:[
+   ["Chicken Burger",109,"nv"],["BBQ Chicken Burger",129,"nv"],["Spice Chicken Burger",139,"nv"],["TGS Bigshow Burger (Chicken)",149,"nv"]]},
+  {name:"Fries", items:[
+   ["French Fries",79,"v"],["Peri Peri Fries",109,"v"],["Chipotle Fries",119,"v"],["Cheesy Peri Peri Fries",129,"v"],
+   ["Double Coated Fries",119,"v"],["Double Coated Cheese Fries",159,"v"]]},
+  {name:"Finger Bites", items:[
+   ["Nachos with Cheese & Salsa",129,"v"],["Cheese Balls",129,"v"],["Cheese Corn Balls",149,"v"],["Jalapeño Cheese Balls",149,"v"]]}]},
+ {id:"sandwich", title:"Sandwiches", groups:[
+  {name:"Veg", items:[
+   ["Veg Sandwich",89,"v"],["Veg Cheese Sandwich",99,"v"],["Toast Bread Butter",69,"v"],["Veg Club Sandwich",120,"v"],
+   ["Cheese Grill Sandwich",120,"v"],["Paneer Tikka Sandwich",149,"v"],["Chocolate Sandwich",129,"v"],["Open Cheese Sandwich",149,"v"],
+   ["BBQ Paneer Sandwich",159,"v"],["Cheese Garlic Bread",119,"v"],["Cheese Chilly Toast",119,"v"]]},
+  {name:"Non Veg", items:[
+   ["Chicken Sandwich",159,"nv"],["Chicken Grill Sandwich",169,"nv"],["Chicken Cheese Grill Sandwich",179,"nv"],["BBQ Grill Chicken Sandwich",189,"nv"]]}]},
+ {id:"pasta", title:"Pasta, Rice & Salads", groups:[
+  {name:"Veg Pasta", items:[
+   ["Alfredo White Sauce Pasta",199,"v"],["Arrabbiata Red Sauce Pasta",199,"v"],["Spaghetti Veg (White Sauce)",199,"v"],
+   ["Spaghetti Veg (Red Sauce)",199,"v"],["Spaghetti Veg (Mix Sauce)",199,"v"],["Primavera (Mix Sauce)",199,"v"]]},
+  {name:"Non Veg Pasta", items:[
+   ["Chicken Alfredo White Sauce Pasta",239,"nv"],["Arrabbiata Chicken Red Sauce Pasta",249,"nv"]]},
+  {name:"Golden Bowl", items:[
+   ["Tawa Pulao",155,"v"],["Golden Ghee Pulao",165,"v"],["Cheese Tawa Pulao",165,"v"],["Veg Fried Rice",165,"v"],
+   ["Dry Fruit Tawa Pulao",175,"v"],["Chicken Fried Rice",199,"nv"],["Chicken Tawa Pulao",249,"nv"]]},
+  {name:"Veg Salad", items:[
+   ["Fruit Salad",180,"v"],["Fruit Salad with Cream",190,"v"],["Veg Salad",99,"v"],["Russian Salad",170,"v"],["Greek Salad",160,"v"]]},
+  {name:"Non Veg Salad", items:[["Chicken Salad",200,"nv"],["Chicken Greek Salad",239,"nv"]]}]},
+ {id:"desi", title:"Parathas & Desi", groups:[
+  {items:[
+   ["Ukdiche Modak",40,"v"],["Aloo Paratha",80,"v"],["Mix Veg Paratha",80,"v"],["Methi Paratha",80,"v"],
+   ["Paneer Paratha",110,"v"],["Cheese Garlic Paratha",130,"v"],["Aluu Vadi",110,"v"],["Kothimbir Vadi",110,"v"]]}]},
+ {id:"maggie", title:"Maggie", groups:[
+  {items:[
+   ["Veg Maggie",60,"v"],["Veg Peri Peri Maggie",65,"v"],["Veg Cheese Maggie",70,"v"],["Cheese Schezwan Maggie",99,"v"],
+   ["Egg Maggie",80,"nv"],["Egg Cheese Maggie",90,"nv"],["Chicken Maggie",110,"nv"],["Chicken Cheese Maggie",120,"nv"]]}]},
+ {id:"momos", title:"Momos", groups:[
+  {name:"Veg Momos (5 pcs)", items:[
+   ["Veg Steam Momos",60,"v"],["Veg Fried Momos",70,"v"],["Veg Paneer Tikka Steam Momos",80,"v"],
+   ["Veg Paneer Tikka Fried Momos",90,"v"],["Cheese Corn Steam Momos",90,"v"],["Cheese Corn Fried Momos",100,"v"]]},
+  {name:"Non Veg Momos (5 pcs)", items:[["Chicken Momos",70,"nv"],["Chicken Fried Momos",90,"nv"]]}]},
+ {id:"bites", title:"Quick Bites & Desserts", groups:[
+  {name:"Quick Bites", items:[
+   ["Bread Butter",55,"v"],["Browny Cake",60,"v"],["Jam Bread",25,"v"],["Cookies",20,"v"],["Chocolate Cookies",25,"v"],
+   ["Classic Bun Maska",35,"v"],["Mango Bun Maska",45,"v"],["Blueberry Bun Maska",55,"v"],["Rose Pistachio Bun Maska",60,"v"],
+   ["Chocolate Bun Maska",49,"v"],["Kesar Bun Maska",49,"v"]]},
+  {name:"Gourmet Desserts", items:[
+   ["Fruit Salad with Ice Cream",159,"v"],["Strawberry with Cream",159,"v"],["Titonic Sundae / Triple Sundae",159,"v"],
+   ["Sizzling Brownie",249,"v"],["Special Ice Cream Bowl",249,"v"]]}]},
+ {id:"icecream", title:"Ice Cream", note:"AMUL · 1 scoop ₹45 / 2 scoops ₹90", groups:[
+  {items:["Butter Scotch","Choco Chips","Brownie Brust","Chocolate","Pista","Dry Fruit","Strawberry","Vanilla"]
+    .map(n=>[n+" Ice Cream",[45,90],"v"]), scoops:true}]},
+ {id:"hot", title:"Hot Beverages", groups:[
+  {name:"Premium Teas", items:[
+   ["Special Tea",25,""],["Black Tea",20,""],["Green Tea",25,""],["Lemon Tea",25,""],["Cardamom Tea",25,""]]},
+  {name:"Coffees", items:[
+   ["Nescafe",35,""],["Black Coffee",25,""],["Americano",80,""],["Cappuccino",99,""],["Cafe Latte",99,""],
+   ["Espresso (Small)",59,""],["Espresso (Big)",99,""],["Vanilla Cappuccino",110,""],["Vanilla Cafe Latte",119,""],
+   ["Irish Cappuccino",110,""],["Irish Cafe Latte",119,""],["Hazelnut Cafe Latte",110,""],["Hazelnut Cappuccino",119,""],
+   ["Cafe Macchiato Small",59,""],["Cafe Macchiato Large",99,""],["Irish Americano",110,""],["Chocolate Cappuccino",110,""],
+   ["Caramel Latte",149,""],["Caramel Cappuccino",149,""]]},
+  {name:"TGS Special Hot Beverages", items:[
+   ["Classic Hot Chocolate",80,""],["Espresso Hot Chocolate",90,""],["Whipped Hot Chocolate",99,""]]}]},
+ {id:"cold", title:"Cold Beverages", groups:[
+  {name:"Frappes", items:[
+   ["Café Frappe",80,""],["Dark Frappe",90,""],["Cold Crunchy Frappe",99,""],["Special Golden Sip Frappe",120,""],
+   ["Hazelnut Frappe",140,""],["Boba Frappe",160,""],["Boba Ice Tea",150,""]]},
+  {name:"Signature", items:[
+   ["Ferrero Rocher Shake",199,""],["Brownie Brust Shake",170,""],["Choco Blast",220,""],["Oreo Shake",119,""],
+   ["KitKat Shake",129,""],["Lassi",50,""],["Kesar Lassi",60,""],["Mango Lassi",60,""],["Butter Milk",40,""],
+   ["Bournvita Full",60,""],["Bournvita Half",30,""]]},
+  {name:"Cold Drinks", items:[
+   ["Red Bull",125,""],["Diet Coke",50,""],["White Monster",125,""],["Black Monster",125,""],["Hell",60,""],
+   ["Sprite",20,""],["Thums Up",20,""],["Mountain Dew",20,""]]}]},
+ {id:"shakes", title:"Shakes, Mastani & Falooda", groups:[
+  {name:"Milk Shakes", items:[
+   ["Vanilla Milk Shake",80,""],["Strawberry Milk Shake",80,""],["Mango Milk Shake",90,""],["Chocolate Milk Shake",99,""],
+   ["Apple Milk Shake",109,""],["Butter Scotch Milk Shake",109,""],["Kesar Milk Shake",119,""],["Dryfruit Shake",135,""],
+   ["Truffle Milk Shake",135,""],["Biscoff Milk Shake",135,""],["Pista Milk Shake",135,""]]},
+  {name:"Mastani Special", items:[
+   ["Mango Mastani",149,""],["Pista Mastani",149,""],["Butter Scotch Mastani",149,""],["Chocolate Mastani",149,""],
+   ["Strawberry Mastani",149,""],["Kesar Pista Mastani",149,""],["Kesar Badam Mastani",149,""],["Dry Fruit Mastani",149,""],
+   ["Special TGS Mastani",169,""]]},
+  {name:"Falooda Special", items:[
+   ["Kesar Falooda",149,""],["Pista Falooda",149,""],["Rose Falooda",149,""],["Special Falooda",169,""]]}]},
+ {id:"mocktails", title:"Mocktails & Juice", groups:[
+  {name:"Mocktails", items:[
+   ["Virgin Mojito",90,""],["Watermelon Mojito",109,""],["Blue Berry",109,""],["Kala Khatta",109,""],["Green Angel",109,""],
+   ["Guava Merry",129,""],["Strawberry Sunshine",109,""],["Kiwi Fizz",109,""],["Cran Berry",109,""],["Blue Angel",109,""],
+   ["Virgin Pina Colada",149,""],["Fruit Punch",149,""]]},
+  {name:"Fresh Fruit Juices", items:[
+   ["Mosambi Juice",109,""],["Orange Juice",109,""],["Pineapple Juice",109,""],["Maramari Mix",109,""],["Mango Juice",109,""],
+   ["Ganga Jamuna",109,""],["Apple Juice",129,""],["Anjeer Juice",139,""]]}]}
+];
+
+const $ = s => document.querySelector(s);
+const cart = new Map(); // key -> {name, label, price, qty}
+let filter = "all";
+
+function render(){
+  $("#tabs").innerHTML = MENU.map(c=>`<a href="#${c.id}">${c.title}</a>`).join("");
+  $("#menu").innerHTML = MENU.map(c=>`
+    <section id="${c.id}">
+      <h2>${c.title}</h2>
+      ${c.note?`<p class="note">${c.note}</p>`:""}
+      ${c.groups.map(g=>`
+        <div class="group">
+          ${g.name?`<h3>${g.name}</h3>`:""}
+          ${g.items.map((it,i)=>{
+            const [name,price,type,desc]=it;
+            const labels = Array.isArray(price) ? (g.scoops||c.id==="icecream" ? ["1 Scoop","2 Scoop"] : ['7 inch','10 inch']) : [""];
+            const prices = Array.isArray(price) ? price : [price];
+            return `<div class="item" data-type="${type}" data-name="${(name+" "+(desc||"")).toLowerCase()}">
+              <span class="dot ${type==="nv"?"nv":type?"":"none"}"></span>
+              <div class="info"><div class="name">${name}</div>${desc?`<div class="desc">${desc}</div>`:""}</div>
+              <div class="prices">${prices.map((p,k)=>{
+                const key=`${c.id}|${name}|${labels[k]}`;
+                return `<button class="add" data-key="${key}" data-name="${name}" data-label="${labels[k]}" data-price="${p}">
+                  ₹${p}${labels[k]?`<small>${labels[k]}</small>`:""}</button>`;}).join("")}</div>
+            </div>`;}).join("")}
+        </div>`).join("")}
+    </section>`).join("");
+}
+
+function applyFilter(){
+  const q = $("#q").value.trim().toLowerCase();
+  let any=false;
+  document.querySelectorAll(".item").forEach(el=>{
+    const ok = el.dataset.name.includes(q) &&
+      (filter==="all" || (filter==="v" ? el.dataset.type!=="nv" : el.dataset.type==="nv"));
+    el.style.display = ok?"":"none"; any ||= ok;
+  });
+  document.querySelectorAll(".group").forEach(g=>g.style.display=[...g.querySelectorAll(".item")].some(i=>i.style.display!=="none")?"":"none");
+  document.querySelectorAll("section").forEach(s=>s.style.display=[...s.querySelectorAll(".group")].some(i=>i.style.display!=="none")?"":"none");
+  $("#empty").style.display = any?"none":"block";
+}
+
+function waLink(text){ return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`; }
+
+function orderText(){
+  if(!cart.size) return "Hello The Golden Sip Café! I would like to place an order:\n";
+  let t="Hello The Golden Sip Café! I would like to order:\n\n";
+  cart.forEach(v=>{ t+=`• ${v.qty} x ${v.name}${v.label?` (${v.label})`:""}\n`; });
+  const n=$("#notes").value.trim(); if(n) t+=`\nNote: ${n}`;
+  return t;
+}
+
+function updateCart(){
+  let count=0,total=0;
+  cart.forEach(v=>{count+=v.qty; total+=v.qty*v.price;});
+  $("#count").textContent=count; $("#total").textContent="₹"+total;
+  document.querySelectorAll(".add").forEach(b=>b.classList.toggle("in",cart.has(b.dataset.key)));
+  $("#lines").innerHTML = cart.size ? [...cart].map(([k,v])=>`
+    <div class="line"><div class="info"><div class="name">${v.name}</div><small>${v.label?v.label+" · ":""}₹${v.price}</small></div>
+      <div class="qty"><button data-k="${k}" data-d="-1">−</button><span>${v.qty}</span><button data-k="${k}" data-d="1">+</button></div></div>`).join("")
+    : `<p class="blank">No items yet. Tap a price to add it,<br>or just send us a message with your order.</p>`;
+}
+
+function openSheet(o){ $("#sheet").classList.toggle("open",o); $("#bg").style.display=o?"block":"none"; }
+function sendWA(){ window.open(waLink(orderText()),"_blank"); }
+
+render(); updateCart();
+
+$("#menu").addEventListener("click",e=>{
+  const b=e.target.closest(".add"); if(!b) return;
+  const k=b.dataset.key;
+  if(cart.has(k)) cart.get(k).qty++;
+  else cart.set(k,{name:b.dataset.name,label:b.dataset.label,price:+b.dataset.price,qty:1});
+  updateCart();
+});
+$("#lines").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-k]"); if(!b) return;
+  const v=cart.get(b.dataset.k); v.qty+=+b.dataset.d;
+  if(v.qty<=0) cart.delete(b.dataset.k);
+  updateCart();
+});
+$("#cartBtn").onclick=()=>openSheet(true);
+$("#close").onclick=$("#bg").onclick=()=>openSheet(false);
+$("#waBar").onclick=()=> cart.size ? openSheet(true) : sendWA();
+$("#send").onclick=sendWA;
+$("#q").addEventListener("input",applyFilter);
+document.querySelectorAll(".filters button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); filter=b.dataset.f; applyFilter();
+});
+
+// highlight active tab while scrolling
+const tabs=$("#tabs");
+const spy=new IntersectionObserver(es=>es.forEach(en=>{
+  if(!en.isIntersecting) return;
+  tabs.querySelectorAll("a").forEach(a=>{
+    const on=a.getAttribute("href")==="#"+en.target.id;
+    a.classList.toggle("active",on);
+    if(on) tabs.scrollTo({left:a.offsetLeft-16,behavior:"smooth"});
+  });
+}),{rootMargin:"-45% 0px -50% 0px"});
+document.querySelectorAll("section").forEach(s=>spy.observe(s));
+</script>
+</body>
+</html>
