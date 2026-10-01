@@ -554,6 +554,51 @@
       color: var(--nonveg);
     }
 
+    .otype {
+      display: flex;
+      gap: 8px;
+      margin: 8px 16px 0;
+    }
+
+    .otype button {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 9px 4px;
+      font: inherit;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .otype button.on {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: #1a1108;
+      border-color: transparent;
+    }
+
+    .otype.err button {
+      border-color: var(--nonveg);
+    }
+
+    .otype-note {
+      display: none;
+      margin: 8px 16px 0;
+      font-size: .74rem;
+      color: var(--gold2);
+    }
+
+    .otype-note.show {
+      display: block;
+    }
+
+    .otype-note.warn {
+      color: var(--nonveg);
+      font-weight: 600;
+    }
+
     .total {
       display: flex;
       justify-content: space-between;
@@ -634,10 +679,17 @@
       <h2>Your Order</h2><button class="x" id="close" aria-label="Close">×</button>
     </header>
     <div class="lines" id="lines"></div>
+    <p class="field-label">Order Type <span class="req">*</span></p>
+    <div class="otype" id="otype">
+      <button type="button" data-t="Dine In">Dine In</button>
+      <button type="button" data-t="Takeaway">Takeaway</button>
+      <button type="button" data-t="Delivery">Delivery</button>
+    </div>
+    <p class="otype-note" id="deliveryNote">Delivery available on orders above ₹120 only.</p>
     <p class="field-label">Your Name <span class="req">*</span></p>
     <input id="custName" type="text" placeholder="Enter your name">
-    <p class="field-label">Delivery Address <span class="req">*</span></p>
-    <input id="custAddress" type="text" placeholder="Enter delivery address">
+    <p class="field-label" id="addrLabel">Table No. / Delivery Address <span class="req">*</span></p>
+    <input id="custAddress" type="text" placeholder="Select an order type first">
     <p class="field-label">Note (special instructions, optional)</p>
     <textarea id="notes" placeholder="e.g. send ketchup, less spicy"></textarea>
     <div class="total"><span>Total</span><span id="total">₹0</span></div>
@@ -803,7 +855,7 @@
         id: "hot", drink: true, title: "Hot Beverages", groups: [
           {
             name: "Premium Teas", items: [
-              ["Special Tea", 25, ""], ["Black Tea", 20, ""], ["Green Tea", 25, ""], ["Lemon Tea", 25, ""], ["Cardamom Tea", 25, ""]]
+              ["Special Tea", 30, ""], ["Black Tea", 20, ""], ["Green Tea", 25, ""], ["Lemon Tea", 25, ""], ["Cardamom Tea", 25, ""]]
           },
           {
             name: "Coffees", items: [
@@ -822,7 +874,7 @@
         id: "cold", drink: true, title: "Cold Beverages", groups: [
           {
             name: "Frappes", items: [
-              ["Café Frappe", 80, ""], ["Dark Frappe", 90, ""], ["Cold Crunchy Frappe", 99, ""], ["Special Golden Sip Frappe", 120, ""],
+              ["Café Frappe", 80, ""], ["Dark Frappe", 90, ""], ["Cold Crunchy Frappe", 110, ""], ["Special Golden Sip Frappe", 140, ""],
               ["Hazelnut Frappe", 140, ""], ["Boba Frappe", 160, ""], ["Boba Ice Tea", 150, ""]]
           },
           {
@@ -932,25 +984,59 @@
 
     function waLink(text) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`; }
 
+    let orderType = "";
+
+    function cartTotal() {
+      let total = 0; cart.forEach(v => total += v.qty * v.price); return total;
+    }
+
     function orderText() {
       const name = $("#custName").value.trim();
       const addr = $("#custAddress").value.trim();
       if (!cart.size) return "Hello The Golden Sip Café! I would like to place an order:\n";
       let t = "Hello The Golden Sip Café! I would like to order:\n\n";
       cart.forEach(v => { t += `• ${v.qty} x ${v.name}${v.label ? ` (${v.label})` : ""}\n`; });
-      t += `\nName: ${name}\nAddress: ${addr}`;
+      t += `\nOrder Type: ${orderType}`;
+      t += `\nName: ${name}`;
+      t += `\n${orderType === "Dine In" ? "Table No." : "Address"}: ${addr}`;
       const n = $("#notes").value.trim(); if (n) t += `\nNote: ${n}`;
       return t;
     }
 
+    function updateAddrLabel() {
+      const label = $("#addrLabel"), addr = $("#custAddress");
+      if (orderType === "Dine In") { label.firstChild.textContent = "Table No. "; addr.placeholder = "Enter your table number"; }
+      else if (orderType === "Delivery") { label.firstChild.textContent = "Delivery Address "; addr.placeholder = "Enter delivery address"; }
+      else if (orderType === "Takeaway") { label.firstChild.textContent = "Your Phone Number "; addr.placeholder = "Enter your phone number"; }
+      else { label.firstChild.textContent = "Table No. / Delivery Address "; addr.placeholder = "Select an order type first"; }
+    }
+
+    function updateDeliveryNote() {
+      const note = $("#deliveryNote");
+      if (orderType !== "Delivery") { note.classList.remove("show", "warn"); return; }
+      note.classList.add("show");
+      const below = cartTotal() < 120;
+      note.classList.toggle("warn", below);
+      note.textContent = below
+        ? `Delivery needs a minimum order of ₹120 (current total ₹${cartTotal()}).`
+        : "Delivery available on orders above ₹120. ✓";
+    }
+
     function validateFields() {
       let ok = true;
-      const name = $("#custName"), addr = $("#custAddress");
+      const typeBox = $("#otype"), name = $("#custName"), addr = $("#custAddress");
+      typeBox.classList.toggle("err", !orderType); if (!orderType) ok = false;
       [[name, name.value.trim()], [addr, addr.value.trim()]].forEach(([el, val]) => {
         el.classList.toggle("err", !val);
         if (!val) ok = false;
       });
-      if (!ok) name.value.trim() ? addr.focus() : name.focus();
+      if (orderType === "Delivery" && cartTotal() < 120) ok = false;
+      updateDeliveryNote();
+      if (!ok) {
+        if (!orderType) typeBox.scrollIntoView({ block: "center" });
+        else if (!name.value.trim()) name.focus();
+        else if (!addr.value.trim()) addr.focus();
+      }
       return ok;
     }
 
@@ -968,6 +1054,7 @@
     <div class="line"><div class="info"><div class="name">${v.name}</div><small>${v.label ? v.label + " · " : ""}₹${v.price}</small></div>
       <div class="qty"><button data-k="${k}" data-d="-1">−</button><span>${v.qty}</span><button data-k="${k}" data-d="1">+</button></div></div>`).join("")
         : `<p class="blank">No items yet. Tap a price to add it,<br>or just send us a message with your order.</p>`;
+      updateDeliveryNote();
     }
 
     function openSheet(o) { $("#sheet").classList.toggle("open", o); $("#bg").style.display = o ? "block" : "none"; }
@@ -1006,6 +1093,13 @@
     $("#send").onclick = sendWA;
     $("#custName").addEventListener("input", e => e.target.classList.remove("err"));
     $("#custAddress").addEventListener("input", e => e.target.classList.remove("err"));
+    $("#otype").addEventListener("click", e => {
+      const b = e.target.closest("button[data-t]"); if (!b) return;
+      orderType = b.dataset.t;
+      $("#otype").classList.remove("err");
+      $("#otype").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+      updateAddrLabel(); updateDeliveryNote();
+    });
     $("#q").addEventListener("input", applyFilter);
     document.querySelectorAll(".filters button").forEach(b => b.onclick = () => {
       document.querySelectorAll(".filters button").forEach(x => x.classList.remove("on"));
