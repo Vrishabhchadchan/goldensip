@@ -1101,7 +1101,7 @@
     });
     $("#cartBtn").onclick = () => openSheet(true);
     $("#close").onclick = $("#bg").onclick = () => openSheet(false);
-    $("#waBar").onclick = () => cart.size ? openSheet(true) : sendWA();
+    $("#waBar").onclick = () => openSheet(true);
     $("#send").onclick = sendWA;
     $("#custName").addEventListener("input", e => e.target.classList.remove("err"));
     $("#custAddress").addEventListener("input", e => e.target.classList.remove("err"));
